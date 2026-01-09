@@ -209,6 +209,10 @@ const FORMAT_OPTIONS = {
     label: t('Send as text'),
     value: 'TEXT',
   },
+  xlsx: {
+    label: t('Send as XLSX'),
+    value: 'XLSX',
+  }
 };
 
 type FORMAT_OPTIONS_KEY = keyof typeof FORMAT_OPTIONS;

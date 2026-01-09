@@ -18,6 +18,9 @@ import io
 from typing import Any
 
 import pandas as pd
+# import urllib.request
+# from urllib.error import URLError, HTTPError
+# from typing import Optional
 
 from superset.utils.core import GenericDataType
 
@@ -40,7 +43,7 @@ def quote_formulas(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def df_to_excel(df: pd.DataFrame, **kwargs: Any) -> Any:
+def df_to_excel(df: pd.DataFrame, **kwargs: Any) -> bytes:
     output = io.BytesIO()
 
     # make sure formulas are quoted, to prevent malicious injections
@@ -80,3 +83,19 @@ def apply_column_types(
             # timezones are not supported
             df[column] = df[column].astype(str)
     return df
+
+# def get_chart_xlsx_data(
+#     chart_url: str, auth_cookies: Optional[dict[str, str]] = None
+# ) -> Optional[bytes]:
+#     content = None
+#     if auth_cookies:
+#         opener = urllib.request.build_opener()
+#         cookie_str = ";".join([f"{key}={val}" for key, val in auth_cookies.items()])
+#         opener.addheaders.append(("Cookie", cookie_str))
+#         response = opener.open(chart_url)
+#         content = response.read()
+#         if response.getcode() != 200:
+#             raise URLError(response.getcode())
+#     if content:
+#         return content
+#     return None

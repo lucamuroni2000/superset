@@ -81,6 +81,7 @@ class ReportDataFormat(StrEnum):
     PDF = "PDF"
     PNG = "PNG"
     CSV = "CSV"
+    XLSX = "XLSX"
     TEXT = "TEXT"
 
 

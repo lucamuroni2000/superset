@@ -18,6 +18,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Optional, Union
 from uuid import UUID
+from io import BytesIO
 
 import pandas as pd
 from celery.exceptions import SoftTimeLimitExceeded
@@ -72,7 +73,7 @@ from superset.reports.notifications.exceptions import (
     SlackV1NotificationError,
 )
 from superset.tasks.utils import get_executor
-from superset.utils import json
+from superset.utils import json, excel
 from superset.utils.core import HeaderDataType, override_user, recipients_string_to_list
 from superset.utils.csv import get_chart_csv_data, get_chart_dataframe
 from superset.utils.decorators import logs_context, transaction
@@ -221,6 +222,7 @@ class BaseReportState:
             if result_format in {
                 ChartDataResultFormat.CSV,
                 ChartDataResultFormat.JSON,
+                ChartDataResultFormat.XLSX,
             }:
                 return get_url_path(
                     "ChartDataRestApi.get_data",
@@ -481,6 +483,18 @@ class BaseReportState:
         if not csv_data:
             raise ReportScheduleCsvFailedError()
         return csv_data
+    
+    def _get_xlsx_data(self) -> bytes:
+        csv_data = self._get_csv_data()
+        df = pd.read_csv(BytesIO(csv_data))
+        # excel.apply_column_types(df, self._report_schedule.chart.query_context)
+        return excel.df_to_excel(df, **app.config["EXCEL_EXPORT"])
+
+        # bio = BytesIO()
+        # # pylint: disable=abstract-class-instantiated
+        # with pd.ExcelWriter(bio, engine="openpyxl") as writer:
+        #     df.to_excel(writer, index=False)
+        # return bio.getvalue()
 
     def _get_embedded_data(self) -> pd.DataFrame:
         """
@@ -591,9 +605,10 @@ class BaseReportState:
 
         :raises: ReportScheduleScreenshotFailedError
         """
-        csv_data = None
+        # csv_data = None
         screenshot_data = []
         pdf_data = None
+        data = None
         embedded_data = None
         error_text = None
         header_data = self._get_log_data()
@@ -615,9 +630,19 @@ class BaseReportState:
                 self._report_schedule.chart
                 and self._report_schedule.report_format == ReportDataFormat.CSV
             ):
-                csv_data = self._get_csv_data()
-                if not csv_data:
+                # csv_data = self._get_csv_data()
+                # if not csv_data:
+                #     error_text = "Unexpected missing csv file"
+                data = self._get_csv_data()
+                if not data:
                     error_text = "Unexpected missing csv file"
+            elif (
+                self._report_schedule.chart
+                and self._report_schedule.report_format == ReportDataFormat.XLSX
+            ):
+                data = self._get_xlsx_data()
+                if not data:
+                    error_text = "Unexpected missing xlsx file"
             if error_text:
                 return NotificationContent(
                     name=self._report_schedule.name,
@@ -652,7 +677,9 @@ class BaseReportState:
             screenshots=screenshot_data,
             pdf=pdf_data,
             description=self._report_schedule.description,
-            csv=csv_data,
+            # csv=csv_data,
+            data=data,
+            data_format=self._report_schedule.report_format,
             embedded_data=embedded_data,
             header_data=header_data,
         )

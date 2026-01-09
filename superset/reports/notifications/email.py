@@ -73,6 +73,7 @@ class EmailContent:
     header_data: Optional[HeaderDataType] = None
     data: Optional[dict[str, Any]] = None
     pdf: Optional[dict[str, bytes]] = None
+    xlsx: Optional[dict[str, bytes]] = None
     images: Optional[dict[str, bytes]] = None
 
 
@@ -118,6 +119,7 @@ class EmailNotification(BaseNotification):  # pylint: disable=too-few-public-met
 
         domain = self._get_smtp_domain()
         images = {}
+        attachment = None
 
         if self._content.screenshots:
             images = {
@@ -184,9 +186,18 @@ class EmailNotification(BaseNotification):  # pylint: disable=too-few-public-met
             </html>
             """
         )
-        csv_data = None
-        if self._content.csv:
-            csv_data = {__("%(name)s.csv", name=self._name): self._content.csv}
+        # csv_data = None
+        # if self._content.csv:
+        #     csv_data = {__("%(name)s.csv", name=self._name): self._content.csv}
+
+        if self._content.data and self._content.data_format:
+            attachment = {
+                __(
+                    "%(name)s.%(format)s",
+                    name=self._content.name,
+                    format=self._content.data_format.lower(),
+                ): self._content.data
+            }
 
         pdf_data = None
         if self._content.pdf:
@@ -196,7 +207,8 @@ class EmailNotification(BaseNotification):  # pylint: disable=too-few-public-met
             body=body,
             images=images,
             pdf=pdf_data,
-            data=csv_data,
+            # data=csv_data,
+            data=attachment,
             header_data=self._content.header_data,
         )
 
