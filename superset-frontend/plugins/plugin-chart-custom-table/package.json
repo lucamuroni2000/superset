@@ -1,0 +1,41 @@
+{
+  "name": "@superset-ui/plugin-chart-custom-table",
+  "version": "0.1.0",
+  "description": "Custom Table Plugin Chart",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "files": [
+    "esm",
+    "lib"
+  ],
+  "author": "My Name",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
+    "@types/d3-array": "^3.2.2",
+    "@types/react-table": "^7.7.20",
+    "classnames": "^2.5.1",
+    "d3-array": "^3.2.4",
+    "lodash": "^4.17.21",
+    "memoize-one": "^5.2.1",
+    "react-table": "^7.8.0",
+    "regenerator-runtime": "^0.14.1",
+    "xss": "^1.0.15"
+  },
+  "peerDependencies": {
+    "@superset-ui/chart-controls": "*",
+    "@superset-ui/core": "*",
+    "@apache-superset/core": "*",
+    "@types/react": "*",
+    "match-sorter": "^6.3.3",
+    "@ant-design/icons": "^5.2.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
