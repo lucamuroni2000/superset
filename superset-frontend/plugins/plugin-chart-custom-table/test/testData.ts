@@ -23,9 +23,9 @@ import {
   QueryMode,
   ComparisonType,
   VizType,
+  supersetTheme,
+  GenericDataType
 } from '@superset-ui/core';
-import { supersetTheme } from '@apache-superset/core/ui';
-import { GenericDataType } from '@apache-superset/core/api/core';
 import { TableChartProps, TableChartFormData } from '../src/types';
 
 const basicFormData: TableChartFormData = {
@@ -42,6 +42,7 @@ const basicFormData: TableChartFormData = {
   timeseries_limit_metric: '',
   table_filter: false,
   table_timestamp_format: '%Y-%m-%d %H:%M:%S',
+  column_style: {},
 };
 
 const basicChartProps = {
@@ -75,7 +76,6 @@ const basicQueryResult: ChartDataResponseResult = {
   cache_key: null,
   cached_dttm: null,
   cache_timeout: null,
-  queried_dttm: null,
   data: [],
   colnames: [],
   coltypes: [],
@@ -371,31 +371,6 @@ const bigint = {
   ],
 };
 
-const nameAndBoolean: TableChartProps = {
-  ...new ChartProps(basicChartProps),
-  queriesData: [
-    {
-      ...basicQueryResult,
-      colnames: ['name', 'is_adult'],
-      coltypes: [GenericDataType.String, GenericDataType.Boolean],
-      data: [
-        {
-          name: 'Alice',
-          is_adult: true,
-        },
-        {
-          name: 'Bob',
-          is_adult: false,
-        },
-        {
-          name: 'Carl',
-          is_adult: null,
-        },
-      ],
-    },
-  ],
-};
-
 export default {
   basic,
   advanced,
@@ -405,5 +380,4 @@ export default {
   empty,
   raw,
   bigint,
-  nameAndBoolean,
 };

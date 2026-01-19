@@ -21,7 +21,7 @@ import {
   ThemeProvider,
   EmotionCacheProvider,
   createEmotionCache,
-} from '@apache-superset/core/ui';
+} from '@superset-ui/core';
 
 const emotionCache = createEmotionCache({
   key: 'test',

@@ -32,8 +32,8 @@ import {
   ContextMenuFilters,
   CurrencyFormatter,
   Currency,
+  GenericDataType
 } from '@superset-ui/core';
-import { GenericDataType } from '@apache-superset/core/api/core';
 import { ColorFormatters } from '@superset-ui/chart-controls';
 import { ColumnStyleData } from './plugin/types';
 

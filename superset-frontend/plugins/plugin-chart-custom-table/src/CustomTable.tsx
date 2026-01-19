@@ -48,16 +48,14 @@ import {
   getTimeFormatterForGranularity,
   BinaryQueryObjectFilterClause,
   extractTextFromHTML,
-} from '@superset-ui/core';
-import {
   styled,
   css,
   useTheme,
   SupersetTheme,
   t,
   tn,
-} from '@apache-superset/core/ui';
-import { GenericDataType } from '@apache-superset/core/api/core';
+  GenericDataType
+} from '@superset-ui/core';
 import {
   Input,
   Space,
@@ -74,7 +72,6 @@ import {
   TableOutlined,
 } from '@ant-design/icons';
 import { isEmpty, debounce, isEqual } from 'lodash';
-import { ColorFormatters } from '@superset-ui/chart-controls';
 import {
   ColorSchemeEnum,
   DataColumnMeta,
@@ -370,13 +367,8 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
     comparisonColumns[0].key,
   ]);
   const [hideComparisonKeys, setHideComparisonKeys] = useState<string[]>([]);
-  // recalculated totals to display when the search filter is applied (client-side pagination)
-  const [displayedTotals, setDisplayedTotals] = useState<D | undefined>(totals);
   const theme = useTheme();
 
-  useEffect(() => {
-    setDisplayedTotals(totals);
-  }, [totals]);
 
   // only take relevant page size options
   const pageSizeOptions = useMemo(() => {
@@ -414,7 +406,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
 
   const getCrossFilterDataMask = useCallback(
     (key: string, value: DataRecordValue) => {
-      let updatedFilters = { ...filters };
+      let updatedFilters = { ...(filters || {}) };
       if (filters && isActiveFilterValue(key, value)) {
         updatedFilters = {};
       } else {
@@ -810,6 +802,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
       const {
         key,
         label: originalLabel,
+        isNumeric,
         dataType,
         isMetric,
         isPercentMetric,
@@ -857,6 +850,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
       const hasTextFont = Boolean(column_styles[column.key]?.textFont);
 
       const hasColumnColorFormatters =
+      isNumeric &&
         Array.isArray(columnColorFormatters) &&
         columnColorFormatters.length > 0;
 
@@ -926,29 +920,17 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
           }
 
           if (hasColumnColorFormatters) {
-            const applyFormatter = (
-              formatter: ColorFormatters[number],
-              valueToFormat: any,
-            ) => {
-              const formatterResult =
-                formatter.getColorFromValue(valueToFormat);
-              if (!formatterResult) return;
-
-              if (formatter.toTextColor) {
-                color = formatterResult.slice(0, -2);
-              } else {
-                backgroundColor = formatterResult;
-              }
-            };
-            columnColorFormatters
+            columnColorFormatters!
               .filter(formatter => formatter.column === column.key)
-              .forEach(formatter => applyFormatter(formatter, value));
-
-            columnColorFormatters
-              .filter(formatter => formatter.toAllRow)
-              .forEach(formatter =>
-                applyFormatter(formatter, row.original[formatter.column]),
-              );
+              .forEach(formatter => {
+                const formatterResult =
+                  value || value === 0
+                    ? formatter.getColorFromValue(value as number)
+                    : false;
+                if (formatterResult) {
+                  backgroundColor = formatterResult;
+                }
+              });
           }
 
           if (
@@ -1160,7 +1142,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
           </th>
         ),
 
-        Footer: displayedTotals ? (
+        Footer: totals ? (
           i === 0 ? (
             <th key={`footer-summary-${i}`}>
               <div
@@ -1186,7 +1168,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
           ) : (
             <td key={`footer-total-${i}`} style={sharedStyle}>
               <strong>
-                {formatColumnValue(column, displayedTotals[key])[1]}
+                {formatColumnValue(column, totals[key])[1]}
               </strong>
             </td>
           )
@@ -1207,7 +1189,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
       getValueRange,
       emitCrossFilters,
       comparisonLabels,
-      displayedTotals,
+      totals,
       theme,
       sortDesc,
       groupHeaderColumns,
@@ -1233,36 +1215,6 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
 
   const [searchOptions, setSearchOptions] = useState<SearchOption[]>([]);
 
-  const handleFilteredDataChange = useCallback(
-    (rows: Row<D>[], searchText?: string) => {
-      if (!totals || serverPagination) {
-        return;
-      }
-
-      if (!searchText?.trim()) {
-        setDisplayedTotals(totals);
-        return;
-      }
-
-      const updatedTotals: Record<string, DataRecordValue> = { ...totals };
-
-      filteredColumnsMeta.forEach(column => {
-        if (column.isMetric || column.isPercentMetric) {
-          const aggregatedValue = rows.reduce<number>((acc, row) => {
-            const rawValue = row.original?.[column.key];
-            const numValue = Number(String(rawValue ?? '').replace(/,/g, ''));
-            return Number.isFinite(numValue) ? acc + numValue : acc;
-          }, 0);
-
-          updatedTotals[column.key] = aggregatedValue;
-        }
-      });
-
-      setDisplayedTotals(updatedTotals as D);
-    },
-    [filteredColumnsMeta, serverPagination, totals],
-  );
-
   useEffect(() => {
     const options = (
       columns as unknown as ColumnWithLooseAccessor &
@@ -1285,7 +1237,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   const handleServerPaginationChange = useCallback(
     (pageNumber: number, pageSize: number) => {
       const modifiedOwnState = {
-        ...serverPaginationData,
+        ...(serverPaginationData || {}),
         currentPage: pageNumber,
         pageSize,
       };
@@ -1297,7 +1249,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   useEffect(() => {
     if (hasServerPageLengthChanged) {
       const modifiedOwnState = {
-        ...serverPaginationData,
+        ...(serverPaginationData || {}),
         currentPage: 0,
         pageSize: serverPageLength,
       };
@@ -1381,49 +1333,6 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
     }
   };
 
-  // collect client-side filtered rows for export & push snapshot to ownState (guarded)
-  const [clientViewRows, setClientViewRows] = useState<DataRecord[]>([]);
-
-  const exportColumns = useMemo(
-    () =>
-      visibleColumnsMeta.map(col => ({
-        key: col.key,
-        label: col.config?.customColumnName || col.originalLabel || col.key,
-      })),
-    [visibleColumnsMeta],
-  );
-
-  // Use a ref to store previous clientViewRows and exportColumns for robust change detection
-  const prevClientViewRef = useRef<{
-    rows: DataRecord[];
-    columns: typeof exportColumns;
-  } | null>(null);
-  useEffect(() => {
-    if (serverPagination) return; // only for client-side mode
-    const prev = prevClientViewRef.current;
-    const rowsChanged = !prev || !isEqual(prev.rows, clientViewRows);
-    const columnsChanged = !prev || !isEqual(prev.columns, exportColumns);
-    if (rowsChanged || columnsChanged) {
-      prevClientViewRef.current = {
-        rows: clientViewRows,
-        columns: exportColumns,
-      };
-      updateTableOwnState(setDataMask, {
-        ...serverPaginationData,
-        clientView: {
-          rows: clientViewRows,
-          columns: exportColumns,
-          count: clientViewRows.length,
-        },
-      });
-    }
-  }, [
-    clientViewRows,
-    exportColumns,
-    serverPagination,
-    setDataMask,
-    serverPaginationData,
-  ]);
 
   return (
     <Styles>
@@ -1461,8 +1370,6 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
         manualSearch={serverPagination}
         onSearchChange={debouncedSearch}
         searchOptions={searchOptions}
-        onFilteredDataChange={handleFilteredDataChange}
-        onFilteredRowsChange={setClientViewRows}
       />
     </Styles>
   );

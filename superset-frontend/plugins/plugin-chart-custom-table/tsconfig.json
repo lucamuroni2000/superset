@@ -1,20 +1,17 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "../..",
+    "composite": true,
+    "baseUrl": ".",
     "outDir": "lib",
     "rootDir": "src",
-    "declarationDir": "lib"
+    "paths": {
+      "@superset-ui/core/components": ["../../packages/superset-ui-core/src/components"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "types/**/*"],
-  "exclude": [
-    "src/**/*.js",
-    "src/**/*.jsx",
-    "src/**/*.test.*",
-    "src/**/*.stories.*"
-  ],
+  "include": ["src/**/*", "types/**/*"],
+  "exclude": ["lib", "test"],
   "references": [
-    { "path": "../../packages/superset-core" },
     { "path": "../../packages/superset-ui-core" },
     { "path": "../../packages/superset-ui-chart-controls" }
   ]

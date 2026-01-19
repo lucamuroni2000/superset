@@ -22,8 +22,8 @@ import {
   getNumberFormatter,
   isProbablyHTML,
   sanitizeHtml,
+  GenericDataType,
 } from '@superset-ui/core';
-import { GenericDataType } from '@apache-superset/core/api/core';
 import { DataColumnMeta } from '../types';
 import DateWithFormatter from './DateWithFormatter';
 

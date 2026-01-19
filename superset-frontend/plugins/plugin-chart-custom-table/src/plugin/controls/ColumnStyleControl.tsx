@@ -1,6 +1,5 @@
 import { ControlComponentProps, ControlHeader } from '@superset-ui/chart-controls';
-import { GenericDataType } from '@apache-superset/core/api/core';
-import { css, useTheme } from '@apache-superset/core/ui';
+import { css, useTheme, GenericDataType } from '@superset-ui/core';
 import { ColumnTypeLabel } from '@superset-ui/chart-controls';
 import { Icons } from '@superset-ui/core/components/Icons';
 import { Popover } from '@superset-ui/core/components/Popover';

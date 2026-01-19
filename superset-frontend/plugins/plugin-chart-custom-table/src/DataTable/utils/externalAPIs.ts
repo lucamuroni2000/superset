@@ -17,27 +17,25 @@
  * under the License.
  */
 
-import type { SetDataMaskHook } from '@superset-ui/core';
-import type { TableOwnState } from '../types/react-table';
+import { SetDataMaskHook } from '@superset-ui/core';
+import { TableOwnState } from '../types/react-table';
 
 export const updateExternalFormData = (
   setDataMask: SetDataMaskHook = () => {},
   pageNumber: number,
   pageSize: number,
-) => {
+) => 
   setDataMask({
     ownState: {
       currentPage: pageNumber,
       pageSize,
     },
   });
-};
 
 export const updateTableOwnState = (
   setDataMask: SetDataMaskHook = () => {},
   modifiedOwnState: TableOwnState,
-) => {
+) => 
   setDataMask({
     ownState: modifiedOwnState,
   });
-};
