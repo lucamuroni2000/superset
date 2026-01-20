@@ -25,6 +25,7 @@ import {
   DataRecord,
   DataRecordValue,
   DataRecordFilters,
+  GenericDataType,
   QueryMode,
   ChartDataResponseResult,
   QueryFormData,
@@ -32,10 +33,8 @@ import {
   ContextMenuFilters,
   CurrencyFormatter,
   Currency,
-  GenericDataType
 } from '@superset-ui/core';
 import { ColorFormatters } from '@superset-ui/chart-controls';
-import { ColumnStyleData } from './plugin/types';
 
 export type CustomFormatter = (value: DataRecordValue) => string;
 
@@ -187,3 +186,15 @@ export enum ColorSchemeEnum {
 }
 
 export default {};
+
+export type ColumnStyleData = {
+    backgroundColor?: string[];
+    textColor?: string;
+    textFont?: string;
+}
+
+export type AddParameters<
+  TFunction extends (...args: any) => any,
+  TParameters extends [...args: any]> = (
+  ...args: [...Parameters<TFunction>, ...TParameters]
+) => ReturnType<TFunction>;

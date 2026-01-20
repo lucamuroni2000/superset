@@ -25,7 +25,6 @@ import {
   MouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
   useEffect,
-  useRef,
 } from 'react';
 
 import {
@@ -44,17 +43,17 @@ import {
   DataRecordValue,
   DTTM_ALIAS,
   ensureIsArray,
+  GenericDataType,
   getSelectedText,
   getTimeFormatterForGranularity,
   BinaryQueryObjectFilterClause,
   extractTextFromHTML,
   styled,
   css,
-  useTheme,
-  SupersetTheme,
   t,
   tn,
-  GenericDataType
+  useTheme,
+  SupersetTheme,
 } from '@superset-ui/core';
 import {
   Input,
@@ -85,13 +84,14 @@ import DataTable, {
   SelectPageSizeRendererProps,
   SizeOption,
 } from './DataTable';
+
 import Styles from './Styles';
 import { formatColumnValue } from './utils/formatValue';
 import { PAGE_SIZE_OPTIONS, SERVER_PAGE_SIZE_OPTIONS } from './consts';
 import { updateTableOwnState } from './DataTable/utils/externalAPIs';
 import getScrollBarSize from './DataTable/utils/getScrollBarSize';
 import DateWithFormatter from './utils/DateWithFormatter';
-import { ColumnStyleData } from './plugin/types';
+import { ColumnStyleData } from './types';
 
 type ValueRange = [number, number];
 
@@ -307,8 +307,6 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
     sticky?: DataTableProps<D>['sticky'];
   },
 ) {
-
-  console.log(props)
   const {
     timeGrain,
     height,
@@ -368,7 +366,6 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   ]);
   const [hideComparisonKeys, setHideComparisonKeys] = useState<string[]>([]);
   const theme = useTheme();
-
 
   // only take relevant page size options
   const pageSizeOptions = useMemo(() => {
@@ -850,7 +847,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
       const hasTextFont = Boolean(column_styles[column.key]?.textFont);
 
       const hasColumnColorFormatters =
-      isNumeric &&
+        isNumeric &&
         Array.isArray(columnColorFormatters) &&
         columnColorFormatters.length > 0;
 
@@ -1167,9 +1164,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
             </th>
           ) : (
             <td key={`footer-total-${i}`} style={sharedStyle}>
-              <strong>
-                {formatColumnValue(column, totals[key])[1]}
-              </strong>
+              <strong>{formatColumnValue(column, totals[key])[1]}</strong>
             </td>
           )
         ) : undefined,
@@ -1237,7 +1232,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   const handleServerPaginationChange = useCallback(
     (pageNumber: number, pageSize: number) => {
       const modifiedOwnState = {
-        ...(serverPaginationData || {}),
+        ...serverPaginationData,
         currentPage: pageNumber,
         pageSize,
       };
@@ -1249,7 +1244,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   useEffect(() => {
     if (hasServerPageLengthChanged) {
       const modifiedOwnState = {
-        ...(serverPaginationData || {}),
+        ...serverPaginationData,
         currentPage: 0,
         pageSize: serverPageLength,
       };
@@ -1311,7 +1306,7 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
 
   const handleSearch = (searchText: string) => {
     const modifiedOwnState = {
-      ...serverPaginationData,
+      ...(serverPaginationData || {}),
       searchColumn:
         serverPaginationData?.searchColumn || searchOptions[0]?.value,
       searchText,
@@ -1325,14 +1320,13 @@ export default function CustomTable<D extends DataRecord = DataRecord>(
   const handleChangeSearchCol = (searchCol: string) => {
     if (!isEqual(searchCol, serverPaginationData?.searchColumn)) {
       const modifiedOwnState = {
-        ...serverPaginationData,
+        ...(serverPaginationData || {}),
         searchColumn: searchCol,
         searchText: '',
       };
       updateTableOwnState(setDataMask, modifiedOwnState);
     }
   };
-
 
   return (
     <Styles>

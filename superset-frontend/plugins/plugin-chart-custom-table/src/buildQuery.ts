@@ -35,8 +35,8 @@ import {
   timeCompareOperator,
 } from '@superset-ui/chart-controls';
 import { isEmpty } from 'lodash';
-import { TableChartFormData } from '../types';
-import { updateTableOwnState } from '../DataTable/utils/externalAPIs';
+import { TableChartFormData } from './types';
+import { updateTableOwnState } from './DataTable/utils/externalAPIs';
 
 /**
  * Infer query mode from form data. If `all_columns` is set, then raw records mode,

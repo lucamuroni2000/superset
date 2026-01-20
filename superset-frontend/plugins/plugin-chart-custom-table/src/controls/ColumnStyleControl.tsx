@@ -1,9 +1,7 @@
 import { ControlComponentProps, ControlHeader } from '@superset-ui/chart-controls';
 import { css, useTheme, GenericDataType } from '@superset-ui/core';
 import { ColumnTypeLabel } from '@superset-ui/chart-controls';
-import { Icons } from '@superset-ui/core/components/Icons';
-import { Popover } from '@superset-ui/core/components/Popover';
-import ColorPicker from '@superset-ui/core/components/ColorPicker';
+import { Icons, Popover, ColorPicker } from '@superset-ui/core/components';
 import { ColumnStyleData, AddParameters } from '../types';
 import { Col, Button, ColorPickerProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -172,7 +170,7 @@ function ColumnConfigPopover(props: ColumnConfigPopoverProps) {
             }}
         >
             <ControlHeader label="Background Color" />
-            <div 
+            <div
                 css={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(5, 1fr)',
@@ -181,10 +179,10 @@ function ColumnConfigPopover(props: ColumnConfigPopoverProps) {
                 }}
             >
                 {props.value.backgroundColor?.map((value, i) =>
-                    <ColorPicker 
+                    <ColorPicker
                         value={value}
-                        allowClear 
-                        panelRender={(panel, extra) => customPanelRender(panel, extra, () => removeBackgroundColor(i))}  
+                        allowClear
+                        panelRender={(panel, extra) => customPanelRender(panel, extra, () => removeBackgroundColor(i))}
                         styles={{ popupOverlayInner: { width: props.width ?? 240} }}
                         onChange={(color) => setBackgroundColor(i, color.toHexString())}
                     />

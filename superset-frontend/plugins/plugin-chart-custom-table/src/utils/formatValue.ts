@@ -19,10 +19,10 @@
 import {
   CurrencyFormatter,
   DataRecordValue,
+  GenericDataType,
   getNumberFormatter,
   isProbablyHTML,
   sanitizeHtml,
-  GenericDataType,
 } from '@superset-ui/core';
 import { DataColumnMeta } from '../types';
 import DateWithFormatter from './DateWithFormatter';

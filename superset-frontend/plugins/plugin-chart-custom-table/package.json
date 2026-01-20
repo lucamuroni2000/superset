@@ -2,9 +2,7 @@
   "name": "@superset-ui/plugin-chart-custom-table",
   "version": "0.1.0",
   "description": "Custom Table Plugin Chart",
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": false,
   "main": "lib/index.js",
   "module": "esm/index.js",
   "files": [
@@ -31,6 +29,12 @@
   "peerDependencies": {
     "@superset-ui/chart-controls": "*",
     "@superset-ui/core": "*",
+    "@testing-library/dom": "^8.20.1",
+    "@testing-library/jest-dom": "*",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/react-hooks": "*",
+    "@testing-library/user-event": "*",
+    "@types/classnames": "*",
     "@types/react": "*",
     "match-sorter": "^6.3.3",
     "@ant-design/icons": "^5.2.6",

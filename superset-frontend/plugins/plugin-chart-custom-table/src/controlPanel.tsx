@@ -40,21 +40,23 @@ import {
   isRegularMetric,
   isPercentMetric,
 } from '@superset-ui/chart-controls';
-import { t, GenericDataType } from '@superset-ui/core';
 import {
   ensureIsArray,
+  GenericDataType,
   isAdhocColumn,
   isPhysicalColumn,
   validateInteger,
   QueryFormColumn,
   QueryMode,
   SMART_DATE_ID,
+  t,
   validateMaxValue,
   validateServerPagination,
 } from '@superset-ui/core';
+
 import { isEmpty, last } from 'lodash';
-import { PAGE_SIZE_OPTIONS, SERVER_PAGE_SIZE_OPTIONS } from '../consts';
-import { ColorSchemeEnum } from '../types';
+import { PAGE_SIZE_OPTIONS, SERVER_PAGE_SIZE_OPTIONS } from './consts';
+import { ColorSchemeEnum } from './types';
 import { ColumnStyleControl } from './controls';
 
 function getQueryMode(controls: ControlStateMapping): QueryMode {
@@ -807,7 +809,7 @@ const config: ControlPanelConfig = {
                           label: Array.isArray(verboseMap)
                             ? colname
                             : (verboseMap[colname] ?? colname),
-verboseMap                        }))
+                        }))
                     : [];
                 const columnOptions = explore?.controls?.time_compare?.value
                   ? processComparisonColumns(

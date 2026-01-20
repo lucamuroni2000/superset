@@ -24,17 +24,17 @@ import {
   DataRecord,
   ensureIsArray,
   extractTimegrain,
+  GenericDataType,
   getMetricLabel,
   getNumberFormatter,
   getTimeFormatter,
   getTimeFormatterForGranularity,
   NumberFormats,
   QueryMode,
+  t,
   SMART_DATE_ID,
   TimeFormats,
   TimeFormatter,
-  GenericDataType,
-  t,
 } from '@superset-ui/core';
 import {
   ColorFormatters,
@@ -43,8 +43,8 @@ import {
 } from '@superset-ui/chart-controls';
 
 import { isEmpty, merge } from 'lodash';
-import isEqualColumns from '../utils/isEqualColumns';
-import DateWithFormatter from '../utils/DateWithFormatter';
+import isEqualColumns from './utils/isEqualColumns';
+import DateWithFormatter from './utils/DateWithFormatter';
 import {
   BasicColorFormatterType,
   ColorSchemeEnum,
@@ -52,7 +52,7 @@ import {
   TableChartProps,
   TableChartTransformedProps,
   TableColumnConfig,
-} from '../types';
+} from './types';
 
 const { PERCENT_3_POINT } = NumberFormats;
 const { DATABASE_DATETIME } = TimeFormats;
@@ -693,7 +693,6 @@ const transformProps = (
     columns,
     conditionalFormatting,
   );
-
 
   // Get cached values for this slice
   const cachedValues = sliceCache.get(slice_id);

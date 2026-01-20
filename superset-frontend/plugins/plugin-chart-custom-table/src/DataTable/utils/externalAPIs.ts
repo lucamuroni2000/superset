@@ -24,7 +24,7 @@ export const updateExternalFormData = (
   setDataMask: SetDataMaskHook = () => {},
   pageNumber: number,
   pageSize: number,
-) => 
+) =>
   setDataMask({
     ownState: {
       currentPage: pageNumber,
@@ -35,7 +35,7 @@ export const updateExternalFormData = (
 export const updateTableOwnState = (
   setDataMask: SetDataMaskHook = () => {},
   modifiedOwnState: TableOwnState,
-) => 
+) =>
   setDataMask({
     ownState: modifiedOwnState,
   });
