@@ -82,7 +82,7 @@ import { HandlebarsChartPlugin } from '@superset-ui/plugin-chart-handlebars';
 import { FilterPlugins } from 'src/constants';
 import AgGridTableChartPlugin from '@superset-ui/plugin-chart-ag-grid-table';
 import TimeTableChartPlugin from '../TimeTable';
-import { CustomTablePluginChart } from '@superset-ui/plugin-chart-custom-table';
+import CustomTablePluginChart from '@superset-ui/plugin-chart-custom-table';
 
 export default class MainPreset extends Preset {
   constructor() {
